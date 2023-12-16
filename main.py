@@ -28,7 +28,7 @@ def start_work():
 
 
 if __name__ == "__main__":
-    bdm = start_work()
+    dbm = start_work()
 
     while True:
         response = input("Введите команду:\n"
@@ -37,19 +37,19 @@ if __name__ == "__main__":
                          "СЗ - Средняя Зарплата по всем вакансиям,\n"
                          "ВС - вакансии с зарплатой Выше Средней,\n"
                          "П профа - Поиск вакансий со словом \"профа\" в названии,\n"
-                         "В - завершить работу программы.")
+                         "В - завершить работу программы.\n")
 
         match response.split(" "):
             case ["СК"]:
-                bdm.get_companies_and_vacancies_count()
+                dbm.print_response(dbm.get_companies_and_vacancies_count())
             case ["СВ"]:
-                bdm.get_all_vacancies()
+                dbm.get_all_vacancies()
             case ["СЗ"]:
-                bdm.get_avg_salary()
+                dbm.get_avg_salary()
             case ["ВС"]:
-                bdm.get_vacancies_with_higher_salary()
+                dbm.get_vacancies_with_higher_salary()
             case ["П"], *name:
-                bdm.get_vacancies_with_keyword(name)
+                dbm.get_vacancies_with_keyword(name)
             case ["В"]:
                 quit()
             case bad_response:
