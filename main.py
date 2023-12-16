@@ -1,4 +1,5 @@
 from api_hh import VacanciesFromEmployer
+from dbmanager import DBManager
 import json
 import os
 
@@ -6,30 +7,31 @@ employers_file = "employers.json"
 
 
 def start_work():
-    #получаем список избранных компаний
+    # получаем список избранных компаний
     with open(employers_file, encoding='UTF-8') as file:
-        employers_list = json.load(file)
+        employers_list = json.load(file)[0]
 
-    #создаём базу данных
-    bdm = BDManager()
+    # создаём базу данных
+    dbmanager = DBManager()
 
     vfe = VacanciesFromEmployer()
-
-    #для каждого работодателя
+    # для каждого работодателя
     for employer in employers_list:
-        #загружаем вакансии
-        vacancies = vfe.get_vacancies(employer)
-        for vacancy in vacancies:
-            #и записываем в бд
-            bdm.add_note(vacancy)
-    #возвращаем бд для дальнейшей работы
-    return bdm
+        # загружаем вакансии
+        vacancies = vfe.get_vacancies(employers_list[employer])
+        vacancies = json.loads(vacancies)
+        for vacancy in vacancies['items']:
+            # и записываем в бд
+            dbmanager.add_note(vacancy)
+    # возвращаем бд для дальнейшей работы
+    return dbmanager
+
 
 if __name__ == "__main__":
     bdm = start_work()
 
     while True:
-        responce = input("Введите команду:\n"
+        response = input("Введите команду:\n"
                          "СК - Список всех Компаний,\n"
                          "СВ - Список всех Вакансий,\n"
                          "СЗ - Средняя Зарплата по всем вакансиям,\n"
@@ -37,7 +39,7 @@ if __name__ == "__main__":
                          "П профа - Поиск вакансий со словом \"профа\" в названии,\n"
                          "В - завершить работу программы.")
 
-        match responce.split(" "):
+        match response.split(" "):
             case ["СК"]:
                 bdm.get_companies_and_vacancies_count()
             case ["СВ"]:
@@ -45,9 +47,9 @@ if __name__ == "__main__":
             case ["СЗ"]:
                 bdm.get_avg_salary()
             case ["ВС"]:
-                bdm.get_rich_vacancies()
+                bdm.get_vacancies_with_higher_salary()
             case ["П"], *name:
-                bdm.search_in_vacancies(name)
+                bdm.get_vacancies_with_keyword(name)
             case ["В"]:
                 quit()
             case bad_response:
