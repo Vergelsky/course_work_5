@@ -32,7 +32,6 @@ class DBManager:
         try:
             with db:
                 with db.cursor() as cursor:
-                    # id вакансии, название вакансии, зарплата, ссылка на вакансию, название компании
                     cursor.execute(text, *args)
                     try:
                         res = cursor.fetchall()
@@ -63,39 +62,44 @@ class DBManager:
 
         self.execute_to_db("INSERT INTO employeers_and_vacancies VALUES"
                            "(%s, %s, %s, %s, %s)"
-                           "ON CONFLICT (vacancy_id) DO NOTHING",
+                           "ON CONFLICT (vacancy_id) DO NOTHING;",
                            (id, name, sal, url, emp))
 
     def print_response(self, response):
+        if not response:
+            print("\nНет данных\n")
+            return
         for line in response:
             print(*line)
+        print("\n")
 
     def get_companies_and_vacancies_count(self):
         """
-        Получает список всех компаний и количество вакансий у каждой компании.
+        Возвращает список всех компаний и количество вакансий у каждой компании.
         """
-        return self.execute_to_db("SELECT employeer, COUNT(*) FROM employeers_and_vacancies GROUP BY employeer")
+        return self.execute_to_db("SELECT employeer, COUNT(*) FROM employeers_and_vacancies GROUP BY employeer;")
 
     def get_all_vacancies(self):
         """
-         Получает список всех вакансий с указанием названия компании, названия вакансии и зарплаты и ссылки на вакансию
+         Возвращает список всех вакансий с указанием названия компании, названия вакансии и зарплаты и ссылки на вакансию
         """
-        pass
+        return self.execute_to_db("SELECT employeer, vacancy_name, salary, url FROM employeers_and_vacancies;")
 
     def get_avg_salary(self):
         """
-        Получает среднюю зарплату по вакансиям.
+        Возвращает среднюю зарплату по вакансиям.
         """
-        pass
+        return self.execute_to_db("SELECT AVG(salary) FROM employeers_and_vacancies;")
 
     def get_vacancies_with_higher_salary(self):
         """
-        Получает список всех вакансий, у которых зарплата выше средней по всем вакансиям.
+        Возвращает список всех вакансий, у которых зарплата выше средней по всем вакансиям.
         """
-        pass
+        return self.execute_to_db("SELECT * FROM employeers_and_vacancies WHERE "
+                                  "salary > (SELECT AVG(salary) FROM employeers_and_vacancies);")
 
     def get_vacancies_with_keyword(self, name):
-        """
-        Получает список всех вакансий, в названии которых содержатся переданные в метод слова, например python.
-        """
-        pass
+
+        return self.execute_to_db("SELECT * FROM employeers_and_vacancies WHERE "
+                                  f"vacancy_name LIKE '%{' '.join(name)}%';")
+

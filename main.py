@@ -43,13 +43,13 @@ if __name__ == "__main__":
             case ["СК"]:
                 dbm.print_response(dbm.get_companies_and_vacancies_count())
             case ["СВ"]:
-                dbm.get_all_vacancies()
+                dbm.print_response(dbm.get_all_vacancies())
             case ["СЗ"]:
-                dbm.get_avg_salary()
+                dbm.print_response(dbm.get_avg_salary())
             case ["ВС"]:
-                dbm.get_vacancies_with_higher_salary()
-            case ["П"], *name:
-                dbm.get_vacancies_with_keyword(name)
+                dbm.print_response(dbm.get_vacancies_with_higher_salary())
+            case ["П", *name]:
+                dbm.print_response(dbm.get_vacancies_with_keyword(name))
             case ["В"]:
                 quit()
             case bad_response:
